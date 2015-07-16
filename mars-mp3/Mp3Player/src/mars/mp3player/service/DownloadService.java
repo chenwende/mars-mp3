@@ -5,6 +5,7 @@ import java.net.URLEncoder;
 
 import mars.download.HttpDownloader;
 import mars.model.Mp3Info;
+import mars.mp3player.AppConstant;
 import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
@@ -44,7 +45,7 @@ public class DownloadService extends Service{
 			//根据MP3文件的名字，生成下载地址		
 			String mp3Url = null;
 			try {
-				mp3Url = "http://192.168.1.100:8088/mp3/" + URLEncoder.encode(mp3Info.getMp3Name(), "UTF-8");
+				mp3Url = AppConstant.URL.BASE_URL + URLEncoder.encode(mp3Info.getMp3Name(), "UTF-8");
 			} catch (UnsupportedEncodingException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -63,7 +64,7 @@ public class DownloadService extends Service{
 			else if(result == 1){
 				resultMessage = "文件下载成功";
 			}	
-			Log.d("MP3","resultMessage = " +resultMessage);
+			//Log.d("MP3","resultMessage = " +resultMessage);
 			//使用Notification提示客户下载结果
 		}
 		
