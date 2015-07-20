@@ -61,13 +61,11 @@ public class PlayerService extends Service {
 		Log.d("pause", "mediaPlayer = " + mediaPlayer.toString());
 		if (mediaPlayer != null) {
 			if (!isReleased) {
-				if (!isPause) {
-					//Log.d("pause1", "mediaPlayer = " + mediaPlayer.toString());
+				if (!isPause) {			
 					mediaPlayer.pause();
 					isPause = true;
 					isPlaying = true;
 				} else {
-					//Log.d("pause2", "mediaPlayer = " + mediaPlayer.toString());
 					mediaPlayer.start();
 					isPause = false;
 				}
@@ -90,6 +88,7 @@ public class PlayerService extends Service {
 				.getAbsolutePath();
 		String path = SDCardRoot + File.separator + "mp3" + File.separator
 				+ mp3Info.getMp3Name();
+		Log.d("getMp3Path", "SDCardRoot = " + SDCardRoot);
 		return path;
 	}
 

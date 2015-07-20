@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import mars.model.Mp3Info;
+import android.R.string;
 import android.os.Environment;
 import android.util.Log;
 
@@ -16,28 +17,28 @@ public class FileUtils {
 	private String SDCardRoot;
 
 	public FileUtils() {
-		// µÃµ½µ±Ç°Íâ²¿´æ´¢Éè±¸µÄÄ¿Â¼
+		// ï¿½Ãµï¿½ï¿½ï¿½Ç°ï¿½â²¿ï¿½æ´¢ï¿½è±¸ï¿½ï¿½Ä¿Â¼
 		SDCardRoot = Environment.getExternalStorageDirectory()
-				.getAbsolutePath()
-				+ File.separator;
+				.getAbsolutePath() + File.separator;
+		Log.d("FileUtils", "SDCardRoot = " + SDCardRoot);
 		SDCardRoot = "/sdcard/";
 	}
 
 	/**
-	 * ÔÚSD¿¨ÉÏ´´½¨ÎÄ¼þ
+	 * ï¿½ï¿½SDï¿½ï¿½ï¿½Ï´ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½
 	 * 
 	 * @throws IOException
 	 */
 	public File createFileInSDCard(String fileName, String dir)
 			throws IOException {
 		File file = new File(SDCardRoot + dir + File.separator + fileName);
-	    Log.d("MP3", "createFileInSDCard : file = " + file.toString());
+		Log.d("MP3", "createFileInSDCard : file = " + file.toString());
 		file.createNewFile();
 		return file;
 	}
 
 	/**
-	 * ÔÚSD¿¨ÉÏ´´½¨Ä¿Â¼
+	 * ï¿½ï¿½SDï¿½ï¿½ï¿½Ï´ï¿½ï¿½ï¿½Ä¿Â¼
 	 * 
 	 * @param dirName
 	 */
@@ -49,7 +50,7 @@ public class FileUtils {
 	}
 
 	/**
-	 * ÅÐ¶ÏSD¿¨ÉÏµÄÎÄ¼þ¼ÐÊÇ·ñ´æÔÚ
+	 * ï¿½Ð¶ï¿½SDï¿½ï¿½ï¿½Ïµï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½Ç·ï¿½ï¿½ï¿½ï¿½
 	 */
 	public boolean isFileExist(String fileName, String path) {
 		File file = new File(SDCardRoot + path + File.separator + fileName);
@@ -57,7 +58,7 @@ public class FileUtils {
 	}
 
 	/**
-	 * ½«Ò»¸öInputStreamÀïÃæµÄÊý¾ÝÐ´Èëµ½SD¿¨ÖÐ
+	 * ï¿½ï¿½Ò»ï¿½ï¿½InputStreamï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ð´ï¿½ëµ½SDï¿½ï¿½ï¿½ï¿½
 	 */
 	public File write2SDFromInput(String path, String fileName,
 			InputStream input) {
@@ -87,22 +88,39 @@ public class FileUtils {
 	}
 
 	/**
-	 * ¶ÁÈ¡Ä¿Â¼ÖÐµÄMp3ÎÄ¼þµÄÃû×ÖºÍ´óÐ¡
+	 * ï¿½ï¿½È¡Ä¿Â¼ï¿½Ðµï¿½Mp3ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ÖºÍ´ï¿½Ð¡
 	 */
 	public List<Mp3Info> getMp3Files(String path) {
 		List<Mp3Info> mp3Infos = new ArrayList<Mp3Info>();
 		File file = new File(SDCardRoot + File.separator + path);
 		Log.d("MP3", "file = " + file.toString());
 		File[] files = file.listFiles();
-		for (int i = 0; i < files.length; i++) {
-			if (files[i].getName().endsWith("mp3")) {
-				Mp3Info mp3Info = new Mp3Info();
-				mp3Info.setMp3Name(files[i].getName());
-				mp3Info.setMp3Size(files[i].length() + "");
-				mp3Infos.add(mp3Info);
+		if (file.exists()) {
+			for (int i = 0; i < files.length; i++) {
+				if (files[i].getName().endsWith("mp3")) {
+					Mp3Info mp3Info = new Mp3Info();
+					mp3Info.setMp3Name(files[i].getName());
+					mp3Info.setMp3Size(files[i].length() + "");
+					// ï¿½ï¿½ï¿½ï¿½lrcName
+					String temp = files[i].getName();
+					String newStr = temp.replaceAll("mp3","lrc");
+					Log.d("getMp3Files", "newStr = " + newStr);
+					for (int j = 0; j < files.length; j++) {
+						if (files[j].getName().equalsIgnoreCase(newStr)) {
+							mp3Info.setLrcName(files[j].getName());
+							mp3Info.setLrcSize(files[j].length() + "");
+						}
+					}
+					Log.d("getMp3Files", "mp3Info = " + mp3Info);
+					mp3Infos.add(mp3Info);
+
+				}
+
 			}
 		}
+		
 		return mp3Infos;
 	}
+
 
 }

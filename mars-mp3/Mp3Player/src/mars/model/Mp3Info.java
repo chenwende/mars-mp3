@@ -10,6 +10,8 @@ public class Mp3Info implements Serializable{
 	private String id;
 	private String mp3Name;
 	private String mp3Size;
+	private String lrcName;
+	private String lrcSize;
 
 	public String getId() {
 		return id;
@@ -72,7 +74,5 @@ public class Mp3Info implements Serializable{
 		this.lrcSize = lrcSize;
 	}
 
-	private String lrcName;
-	private String lrcSize;
 
 }

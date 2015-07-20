@@ -10,6 +10,7 @@ import android.app.Service;
 import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
+import android.widget.Toast;
 
 public class DownloadService extends Service{
 
@@ -18,16 +19,15 @@ public class DownloadService extends Service{
 		return null;
 	}
 
-	//Ã¿´ÎÓÃ»§µã»÷ListActivityµ±ÖĞµÄÒ»¸öÌõÄ¿Ê±£¬¾Í»áµ÷ÓÃ¸Ã·½·¨
+	//Ã¿ï¿½ï¿½ï¿½Ã»ï¿½ï¿½ï¿½ï¿½ListActivityï¿½ï¿½ï¿½Ğµï¿½Ò»ï¿½ï¿½ï¿½ï¿½Ä¿Ê±ï¿½ï¿½ï¿½Í»ï¿½ï¿½ï¿½Ã¸Ã·ï¿½ï¿½ï¿½
 	@Override
-	public int onStartCommand(Intent intent, int flags, int startId) {
-		// TODO Auto-generated method stub
-		//´ÓIntent¶ÔÏóµ±ÖĞ½«Mp3Info¶ÔÏóÈ¡³ö
+	public int onStartCommand(Intent intent, int flags, int startId) {	
+		//ï¿½ï¿½Intentï¿½ï¿½ï¿½ï¿½ï¿½Ğ½ï¿½Mp3Infoï¿½ï¿½ï¿½ï¿½È¡ï¿½ï¿½
 		Mp3Info mp3Info = (Mp3Info)intent.getSerializableExtra("mp3Info");
 		Log.d("MP3", "onStartCommand : mp3Info = " + mp3Info);
-		//Éú³ÉÒ»¸öÏÂÔØÏß³Ì£¬²¢½«Mp3Info¶ÔÏó×÷Îª²ÎÊı´«µİµ½Ïß³Ì¶ÔÏóµ±ÖĞ
+		//ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß³Ì£ï¿½ï¿½ï¿½ï¿½ï¿½Mp3Infoï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Îªï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½İµï¿½ï¿½ß³Ì¶ï¿½ï¿½ï¿½ï¿½ï¿½
 		DownloadThread downloadThread = new DownloadThread(mp3Info);
-		//Æô¶¯ĞÂÏß³Ì
+		//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ß³ï¿½
 		Thread thread = new Thread(downloadThread);
 		thread.start();
 		return super.onStartCommand(intent, flags, startId);
@@ -40,31 +40,42 @@ public class DownloadService extends Service{
 		}
 		@Override
 		public void run() {
-			//ÏÂÔØµØÖ·http://192.168.1.100:8088/mp3/
-			//¸ù¾İMP3ÎÄ¼şµÄÃû×Ö£¬Éú³ÉÏÂÔØµØÖ·		
+			//ï¿½ï¿½ï¿½Øµï¿½Ö·http://192.168.1.100:8088/mp3/
+			//ï¿½ï¿½ï¿½ï¿½MP3ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ö£ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Øµï¿½Ö·		
 			String mp3Url = null;
-			try {
-				mp3Url = AppConstant.URL.BASE_URL + URLEncoder.encode(mp3Info.getMp3Name(), "UTF-8");
-			} catch (UnsupportedEncodingException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			//Éú³ÉÏÂÔØÎÄ¼şËùÓÃµÄ¶ÔÏó
+			String lrcUrl = null;
+			mp3Url = AppConstant.URL.BASE_URL + URLEncoder.encode(mp3Info.getMp3Name());
+			lrcUrl = AppConstant.URL.BASE_URL + URLEncoder.encode(mp3Info.getMp3Name());
+			//lrcUrl = AppConstant.URL.BASE_URL + URLEncoder.encode(mp3Info.getMp3Name(), "UTF-8");
+			//ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ÃµÄ¶ï¿½ï¿½ï¿½
 			HttpDownloader httpDownloader = new HttpDownloader();
-			//½«ÎÄ¼şÏÂÔØÏÂÀ´£¬²¢´æ´¢µ½SDCardµ±ÖĞ		
-			int result = httpDownloader.downFile(mp3Url, "mp3", mp3Info.getMp3Name());
-			String resultMessage = null;
-			if(result == -1){
-				resultMessage = "ÏÂÔØÊ§°Ü";
+			//ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½æ´¢ï¿½ï¿½SDCardï¿½ï¿½ï¿½ï¿½		
+			int mp3result = httpDownloader.downFile(mp3Url, "mp3", mp3Info.getMp3Name());
+			int lrcresult = httpDownloader.downFile(lrcUrl, "mp3", mp3Info.getLrcName());
+			String mp3resultMessage = null;
+			String lrcresultMessage = null;
+			if(mp3result == AppConstant.DownMsg.DOWN_FAIL){
+				mp3resultMessage =  mp3Info.getMp3Name() + "ä¸‹è½½å¤±è´¥";
 			}
-			else if(result == 0){
-				resultMessage = "ÎÄ¼şÒÑ¾­´æÔÚ£¬²»ĞèÒªÖØ¸´ÏÂÔØ";
+			else if(mp3result == AppConstant.DownMsg.DOWN_PASS){
+				mp3resultMessage = mp3Info.getMp3Name() + "ä¸‹è½½æˆåŠŸ";
 			}
-			else if(result == 1){
-				resultMessage = "ÎÄ¼şÏÂÔØ³É¹¦";
-			}	
+			else if(mp3result == AppConstant.DownMsg.DOWN_EXIST){
+				mp3resultMessage =  mp3Info.getMp3Name() + "å·²ç»å­˜åœ¨";
+			}
+			if(lrcresult == AppConstant.DownMsg.DOWN_FAIL){
+				lrcresultMessage = mp3Info.getLrcName() + "ä¸‹è½½å¤±è´¥";
+			}
+			else if(lrcresult == AppConstant.DownMsg.DOWN_PASS){
+				lrcresultMessage = mp3Info.getLrcName() + "ä¸‹è½½æˆåŠŸ";
+			}
+			else if(lrcresult ==  AppConstant.DownMsg.DOWN_EXIST){
+				lrcresultMessage = mp3Info.getLrcName() + "å·²ç»å­˜åœ¨";
+			}
+			//Toast.makeText(DownloadService.this, "MP3ä¸‹è½½ç»“æœï¼š" +mp3resultMessage, Toast.LENGTH_SHORT).show();
+			//Toast.makeText(DownloadService.this, "æ­Œè¯ä¸‹è½½ç»“æœï¼š" +lrcresultMessage, Toast.LENGTH_SHORT).show();
 			//Log.d("MP3","resultMessage = " +resultMessage);
-			//Ê¹ÓÃNotificationÌáÊ¾¿Í»§ÏÂÔØ½á¹û
+			//Ê¹ï¿½ï¿½Notificationï¿½ï¿½Ê¾ï¿½Í»ï¿½ï¿½ï¿½ï¿½Ø½ï¿½ï¿½
 		}
 		
 	}

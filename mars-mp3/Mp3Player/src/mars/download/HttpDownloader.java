@@ -16,8 +16,8 @@ public class HttpDownloader {
 	private URL url = null;
 
 	/**
-	 * ¸ù¾ÝURLÏÂÔØÎÄ¼þ£¬Ç°ÌáÊÇÕâ¸öÎÄ¼þµ±ÖÐµÄÄÚÈÝÊÇÎÄ±¾£¬º¯ÊýµÄ·µ»ØÖµ¾ÍÊÇÎÄ¼þµ±ÖÐµÄÄÚÈÝ 1.´´½¨Ò»¸öURL¶ÔÏó
-	 * 2.Í¨¹ýURL¶ÔÏó£¬´´½¨Ò»¸öHttpURLConnection¶ÔÏó 3.µÃµ½InputStram 4.´ÓInputStreamµ±ÖÐ¶ÁÈ¡Êý¾Ý
+	 * ï¿½ï¿½ï¿½ï¿½URLï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½Ç°ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä±ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä·ï¿½ï¿½ï¿½Öµï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½Ðµï¿½ï¿½ï¿½ï¿½ï¿½ 1.ï¿½ï¿½ï¿½ï¿½Ò»ï¿½ï¿½URLï¿½ï¿½ï¿½ï¿½
+	 * 2.Í¨ï¿½ï¿½URLï¿½ï¿½ï¿½ó£¬´ï¿½ï¿½ï¿½Ò»ï¿½ï¿½HttpURLConnectionï¿½ï¿½ï¿½ï¿½ 3.ï¿½Ãµï¿½InputStram 4.ï¿½ï¿½InputStreamï¿½ï¿½ï¿½Ð¶ï¿½È¡ï¿½ï¿½ï¿½ï¿½
 	 * 
 	 * @param urlStr
 	 * @return
@@ -26,13 +26,10 @@ public class HttpDownloader {
 		StringBuffer sb = new StringBuffer();
 		String line = null;
 		BufferedReader buffer = null;
-		try {
-			// ´´½¨Ò»¸öURL¶ÔÏó
+		try {	
 			url = new URL(urlStr);
-			// ´´½¨Ò»¸öHttpÁ¬½Ó
 			HttpURLConnection urlConn = (HttpURLConnection) url
 					.openConnection();
-			// Ê¹ÓÃIOÁ÷¶ÁÈ¡Êý¾Ý
 			buffer = new BufferedReader(new InputStreamReader(
 					urlConn.getInputStream(),"UTF-8"));
 			while ((line = buffer.readLine()) != null) {
@@ -51,12 +48,9 @@ public class HttpDownloader {
 	}
 
 	/**
-	 * ¸Ãº¯Êý·µ»ØÕûÐÎ -1£º´ú±íÏÂÔØÎÄ¼þ³ö´í 0£º´ú±íÏÂÔØÎÄ¼þ³É¹¦ 1£º´ú±íÎÄ¼þÒÑ¾­´æÔÚ
+	 * ï¿½Ãºï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ -1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½ï¿½ï¿½ï¿½ 0ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½É¹ï¿½ 1ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ä¼ï¿½ï¿½Ñ¾ï¿½ï¿½ï¿½ï¿½ï¿½
 	 */
 	public int downFile(String urlStr, String path, String fileName) {
-		Log.d("MP3", "downFile : urlStr =" + urlStr);
-		Log.d("MP3", "downFile : path =" + path);
-		Log.d("MP3", "downFile : fileName =" + fileName);
 		InputStream inputStream = null;
 		try {
 			FileUtils fileUtils = new FileUtils();
@@ -84,7 +78,7 @@ public class HttpDownloader {
 	}
 
 	/**
-	 * ¸ù¾ÝURLµÃµ½ÊäÈëÁ÷
+	 * ï¿½ï¿½ï¿½ï¿½URLï¿½Ãµï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
 	 * 
 	 * @param urlStr
 	 * @return
@@ -93,15 +87,9 @@ public class HttpDownloader {
 	 */
 	public InputStream getInputStreamFromUrl(String urlStr)
 			throws MalformedURLException, IOException {
-		
-		
-		Log.d("MP3", "getInputStreamFromUrl : urlStr = " + urlStr);
 		url = new URL(urlStr);
-		Log.d("MP3", "getInputStreamFromUrl : url = " + url.toString());
 		HttpURLConnection urlConn = (HttpURLConnection) url.openConnection();
-		Log.d("MP3", "getInputStreamFromUrl : urlConn = " + urlConn.toString());
 		InputStream inputStream = urlConn.getInputStream();
-		Log.d("MP3", "getInputStreamFromUrl : inputStream" + inputStream.toString());
 		return inputStream;
 	}
 }

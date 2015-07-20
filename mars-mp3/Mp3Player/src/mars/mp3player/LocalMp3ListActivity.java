@@ -10,6 +10,7 @@ import mars.utils.FileUtils;
 import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
@@ -49,6 +50,7 @@ public class LocalMp3ListActivity extends ListActivity {
 			Mp3Info mp3Info = mp3Infos.get(position);
 			Intent intent = new Intent();
 			intent.putExtra("mp3Info", mp3Info);
+			Log.d("onListItemClick", "mp3Info = " + mp3Info);
 			intent.setClass(this, PlayerActivity.class);
 			startActivity(intent);
 		}
