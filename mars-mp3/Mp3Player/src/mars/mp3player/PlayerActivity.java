@@ -11,7 +11,10 @@ import mars.lrc.LrcProcessor;
 import mars.model.Mp3Info;
 import mars.mp3player.service.PlayerService;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -29,17 +32,10 @@ public class PlayerActivity extends Activity {
 	Button lrcButton = null;
 	private TextView lrcTextView = null;
 	private Mp3Info mp3Info = null;
-	private ArrayList<Queue> queue = null;
 	private Handler handler = new Handler();
-	private UdateTimeCallback updateTimeCallback = null;
-	private long begin = 0;
-	private long nextTimeMill = 0;
-	private long currentTimeMill = 0;
-	private String message = null;
-	private long pauseTimeMills = 0;
-	private boolean isPlaying = false;
 	Intent intent = new Intent();
-	private boolean isdisplaycrc = false;
+    private IntentFilter intentFilter = null;  
+    private BroadcastReceiver receiver = null;  
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +47,9 @@ public class PlayerActivity extends Activity {
 		beginButton = (ImageButton) findViewById(R.id.begin);
 		pauseButton = (ImageButton) findViewById(R.id.pause);
 		stopButton = (ImageButton) findViewById(R.id.stop);
-		lrcButton = (Button) findViewById(R.id.lrc);
 		beginButton.setOnClickListener(new BeginButtonListener());
 		pauseButton.setOnClickListener(new PauseButtonListener());
 		stopButton.setOnClickListener(new StopButtonListener());
-		lrcButton.setOnClickListener(new lrcButtonListener());
 		lrcTextView = (TextView) findViewById(R.id.lrcTextView);
 	}
 
@@ -64,24 +58,22 @@ public class PlayerActivity extends Activity {
 		@Override
 		public void onClick(View v) {
 			intent.setClass(PlayerActivity.this, PlayerService.class);
-			intent.putExtra("MSG", AppConstant.PlayerMsg.PLAY_MSG);	
-			if (isdisplaycrc) {
-				prepareLrc(mp3Info.getLrcName());
-				begin = System.currentTimeMillis();
-				handler.postDelayed(updateTimeCallback, 5);
-			}
+			intent.putExtra("MSG", AppConstant.PlayerMsg.PLAY_MSG);
+			//prepareLrc(mp3Info.getLrcName());
+			//begin = System.currentTimeMillis();
+			//handler.postDelayed(updateTimeCallback, 5);
 			startService(intent);
-			isPlaying = true;
+			//isPlaying = true;
 		}
 
 	}
 
-	private void prepareLrc(String lrcName) {
+/*	private void prepareLrc(String lrcName) {
 		try {
 			Log.d("prepareLrc", "lrcName =" + lrcName);
 			InputStream inputStream = new FileInputStream(Environment
 					.getExternalStorageDirectory().getAbsolutePath()
-					+ File.separator + "mp3" + File.separator + lrcName);	
+					+ File.separator + "mp3" + File.separator + lrcName);
 			LrcProcessor lrcProcessor = new LrcProcessor();
 			queue = lrcProcessor.process(inputStream);
 			updateTimeCallback = new UdateTimeCallback(queue);
@@ -92,7 +84,7 @@ public class PlayerActivity extends Activity {
 			System.out.println(e.getMessage());
 			System.out.println("meiy");
 		}
-	}
+	}*/
 
 	class PauseButtonListener implements OnClickListener {
 
@@ -101,16 +93,14 @@ public class PlayerActivity extends Activity {
 			intent.setClass(PlayerActivity.this, PlayerService.class);
 			intent.putExtra("MSG", AppConstant.PlayerMsg.PAUSE_MSG);
 			startService(intent);
-			if (isdisplaycrc) {
-				if (isPlaying) {
-					handler.removeCallbacks(updateTimeCallback);
-					pauseTimeMills = System.currentTimeMillis();
-				} else {
-					handler.postDelayed(updateTimeCallback, 5);
-					begin = System.currentTimeMillis() - pauseTimeMills + begin;
-				}
-			}
-			isPlaying = isPlaying ? false : true;
+			/*if (isPlaying) {
+				handler.removeCallbacks(updateTimeCallback);
+				pauseTimeMills = System.currentTimeMillis();
+			} else {
+				handler.postDelayed(updateTimeCallback, 5);
+				begin = System.currentTimeMillis() - pauseTimeMills + begin;
+			}*/
+			//isPlaying = isPlaying ? false : true;
 
 		}
 
@@ -123,39 +113,33 @@ public class PlayerActivity extends Activity {
 			intent.setClass(PlayerActivity.this, PlayerService.class);
 			intent.putExtra("MSG", AppConstant.PlayerMsg.STOP_MSG);
 			startService(intent);
-			if (isdisplaycrc) {
-				handler.removeCallbacks(updateTimeCallback);
-			}
-			
+			//handler.removeCallbacks(updateTimeCallback);
 		}
 	}
 
-	class lrcButtonListener implements OnClickListener {
-
-		@Override
-		public void onClick(View v) {
-			isdisplaycrc = true;
-		}
-	}
-
-	class UdateTimeCallback implements Runnable {
+	/*class UdateTimeCallback implements Runnable {
 		Queue time = null;
 		Queue messages = null;
 
 		public UdateTimeCallback(ArrayList<Queue> queue) {
-			time = queue.get(1);
+			time = queue.get(0);
 			messages = queue.get(1);
+			Log.d("UdateTimeCallback", "time =" + time);
+			Log.d("UdateTimeCallback", "messages =" + messages);
 		}
 
 		@Override
 		public void run() {
 			long offset = System.currentTimeMillis() - begin;
 			if (currentTimeMill == 0) {
+				Log.d("run", "time =" + time);
+				// nextTimeMill = Long.valueOf((String) time.poll());
 				nextTimeMill = (Long) time.poll();
 				message = (String) messages.poll();
 			}
 			if (offset >= nextTimeMill) {
 				lrcTextView.setText(message);
+				// nextTimeMill = Long.valueOf((String) time.poll());
 				nextTimeMill = (Long) time.poll();
 				message = (String) messages.poll();
 			}
@@ -164,5 +148,42 @@ public class PlayerActivity extends Activity {
 		}
 
 	}
-
+*/
+	
+	 /** 
+     * 广播接收器，主要作用接收service所发送的广播，并且更新UI,也就是放置歌词的TextView 
+     * @author Administrator 
+     * 
+     */  
+    class LrcMessageBroadcastReceiver extends BroadcastReceiver{  
+  
+        @Override  
+        public void onReceive(Context context, Intent intent) {  
+            // TODO Auto-generated method stub  
+            //从intent中取出歌词信息，更新TextView  
+            String lrcMessage = intent.getStringExtra("lrcMessage");  
+            lrcTextView.setText(lrcMessage);  
+        }  
+          
+    }  
+    private IntentFilter getIntentFilter(){  
+        if(intentFilter == null){  
+            intentFilter = new IntentFilter();  
+            intentFilter.addAction(AppConstant.LRC_MESSAGE_ACTION);  
+        }  
+        return intentFilter;  
+    }  
+    @Override  
+    protected void onPause() {  
+        // TODO Auto-generated method stub  
+        super.onPause();  
+        unregisterReceiver(receiver);  
+    }  
+    @Override  
+    protected void onResume() {  
+        // TODO Auto-generated method stub  
+        super.onResume();  
+        receiver = new LrcMessageBroadcastReceiver();  
+        registerReceiver(receiver, getIntentFilter());  
+    }  
 }

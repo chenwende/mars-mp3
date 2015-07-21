@@ -15,6 +15,6 @@ public class AppConstant {
 	public class URL{
 		public static final String BASE_URL = "http://192.168.1.100:8088/mp3/";
 	}
-    
+	public static final String LRC_MESSAGE_ACTION = "mars.mp3player.lrcmessage.action"; 
 	
 }

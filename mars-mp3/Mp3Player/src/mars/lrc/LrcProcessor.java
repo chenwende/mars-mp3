@@ -47,8 +47,9 @@ public class LrcProcessor {
 					result = result + temp + "\n";
 				}
 				
+			}if (result != null) {
+				messages.add(result);
 			}
-			messages.add(result);
 			queues.add(timeMills);
 			queues.add(messages);
 		} catch (Exception e) {

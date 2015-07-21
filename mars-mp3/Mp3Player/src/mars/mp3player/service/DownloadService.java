@@ -19,15 +19,11 @@ public class DownloadService extends Service{
 		return null;
 	}
 
-	//ÿ���û����ListActivity���е�һ����Ŀʱ���ͻ���ø÷���
 	@Override
 	public int onStartCommand(Intent intent, int flags, int startId) {	
-		//��Intent�����н�Mp3Info����ȡ��
 		Mp3Info mp3Info = (Mp3Info)intent.getSerializableExtra("mp3Info");
 		Log.d("MP3", "onStartCommand : mp3Info = " + mp3Info);
-		//����һ�������̣߳�����Mp3Info������Ϊ�������ݵ��̶߳�����
 		DownloadThread downloadThread = new DownloadThread(mp3Info);
-		//�������߳�
 		Thread thread = new Thread(downloadThread);
 		thread.start();
 		return super.onStartCommand(intent, flags, startId);
@@ -40,16 +36,12 @@ public class DownloadService extends Service{
 		}
 		@Override
 		public void run() {
-			//���ص�ַhttp://192.168.1.100:8088/mp3/
-			//����MP3�ļ������֣��������ص�ַ		
 			String mp3Url = null;
 			String lrcUrl = null;
 			mp3Url = AppConstant.URL.BASE_URL + URLEncoder.encode(mp3Info.getMp3Name());
-			lrcUrl = AppConstant.URL.BASE_URL + URLEncoder.encode(mp3Info.getMp3Name());
+			lrcUrl = AppConstant.URL.BASE_URL + URLEncoder.encode(mp3Info.getLrcName());
 			//lrcUrl = AppConstant.URL.BASE_URL + URLEncoder.encode(mp3Info.getMp3Name(), "UTF-8");
-			//���������ļ����õĶ���
-			HttpDownloader httpDownloader = new HttpDownloader();
-			//���ļ��������������洢��SDCard����		
+			HttpDownloader httpDownloader = new HttpDownloader();	
 			int mp3result = httpDownloader.downFile(mp3Url, "mp3", mp3Info.getMp3Name());
 			int lrcresult = httpDownloader.downFile(lrcUrl, "mp3", mp3Info.getLrcName());
 			String mp3resultMessage = null;

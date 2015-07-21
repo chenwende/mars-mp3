@@ -85,7 +85,7 @@ public class Mp3ListActivity extends ListActivity {
 		Thread new2Thread = new Thread(new Runnable() {
 			@Override
 			public void run() {
-			  xml = downloadXML("http://192.168.1.100:8088/mp3/resources.xml");
+			  xml = downloadXML(AppConstant.URL.BASE_URL + "resources.xml");
 			}
 		});
 		new2Thread.start();
@@ -97,7 +97,6 @@ public class Mp3ListActivity extends ListActivity {
 	private String downloadXML(String urlStr) {
 		HttpDownloader httpDownloader = new HttpDownloader();
 		String result = httpDownloader.download(urlStr);
-		Log.d("MP3", "downloadXML : result = " + result);
 		return result;
 	}
 
